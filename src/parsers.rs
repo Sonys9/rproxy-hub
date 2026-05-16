@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::colors::{
     self,
     ColorPlace::{Background, Foreground},
@@ -40,4 +42,18 @@ pub fn parse_caps(caps: &Captures) -> String {
         )
         .unwrap_or_default(),
     }
+}
+
+pub async fn parse_proxies(file: &PathBuf) -> Result<Vec<String>, String> {
+    if !file.exists() {
+        return Err("Failed to load proxies: file not found".to_string());
+    };
+    let proxies = tokio::fs::read_to_string(file)
+        .await
+        .map_err(|e| format!("Failed to read file: {}", e))?
+        .lines()
+        .map(|line| line.trim().to_string())
+        .filter(|line| !line.is_empty())
+        .collect();
+    Ok(proxies)
 }

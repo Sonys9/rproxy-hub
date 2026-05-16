@@ -1,7 +1,9 @@
 use clap::Parser;
-use log::{error, info};
+use log::error;
 use regex::{Captures, Regex};
 use std::{net::SocketAddr, path::PathBuf};
+
+use crate::tcp::Tcp;
 mod colors;
 mod parsers;
 mod tcp;
@@ -22,7 +24,7 @@ fn display_banner(listen_ip: &String, forward_to: &String, proxies_path: &std::b
         .replace("%app_version%", env!("CARGO_PKG_VERSION"))
         .replace("%listen_ip%", listen_ip)
         .replace("%forward_to%", forward_to)
-        .replace("%proxies_path%", proxies_path);
+        .replace("%proxies_path%", &proxies_path);
     let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
     let banner = colors_regex.replace_all(&uncolored_banner, |caps: &Captures| {
         parsers::parse_caps(caps)
@@ -66,10 +68,15 @@ async fn main() {
     if !args.silent {
         display_banner(&args.listen_ip.to_string(), &args.forward_to.to_string(), &args.proxies_path.to_string_lossy())
     };
-    if !args.proxies_path.exists() {
-        return error!("Failed to load proxies: file not found");
+    let proxies = parsers::parse_proxies(&args.proxies_path).await.expect("Failed to parse proxies");
+    if proxies.len() == 0 {
+        return error!("Proxy file is empty at {}!", args.proxies_path.to_string_lossy());
     };
-    info!("Waiting for packets...");
+    Tcp {
+        listen_ip: args.listen_ip,
+        forward_to: args.forward_to,
+        proxies: proxies
+    }.start_loop().await;
 }
 
 #[cfg(test)]
