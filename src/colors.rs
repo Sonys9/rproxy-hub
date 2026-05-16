@@ -284,3 +284,22 @@ pub static COLORS: &[(&str, &str)] = &[
     ("254", "\x1b[%place%;5;254m"),
     ("255", "\x1b[%place%;5;255m"),
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_color_find() {
+        let color = find("reset").unwrap();
+        assert_eq!(color, "\x1b[0m");
+    }
+
+    #[test]
+    fn test_with_place() {
+        let color_foreground = "\x1b[%place%;5;255m".with_place(ColorPlace::Foreground);
+        let color_background = "\x1b[%place%;5;255m".with_place(ColorPlace::Background);
+        assert_eq!("\x1b[38;5;255m", color_foreground);
+        assert_eq!("\x1b[48;5;255m", color_background);
+    }
+}
