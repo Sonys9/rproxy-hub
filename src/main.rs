@@ -1,8 +1,11 @@
-use std::{env::args, net::SocketAddr, path::PathBuf};
+use crate::colors::{
+    Color,
+    ColorPlace::{Background, Foreground},
+};
 use clap::Parser;
-use log::{error, info};
+use log::info;
 use regex::{Captures, Regex};
-use crate::colors::{Color, ColorPlace::{Foreground, Background}};
+use std::{net::SocketAddr, path::PathBuf};
 mod colors;
 
 fn parse_byte(byte: Option<&&str>) -> u8 {
@@ -11,17 +14,24 @@ fn parse_byte(byte: Option<&&str>) -> u8 {
 
 fn parse_caps(caps: &Captures) -> String {
     let color_parts: Vec<&str> = caps[0][1..caps[0].len() - 1].split("_").collect();
-    let place = if color_parts.get(1).unwrap_or(&"") == &"fg" { Foreground } else { Background };
+    let place = if color_parts.get(1).unwrap_or(&"") == &"fg" {
+        Foreground
+    } else {
+        Background
+    };
     let color_type = color_parts.get(2).unwrap_or(&"");
     match *color_type {
         "rgb" => colors::from_rgb(
-                    parse_byte(color_parts.get(3)), 
-                    parse_byte(color_parts.get(4)), 
-                    parse_byte(color_parts.get(5))
-                ).with_place(place),
+            parse_byte(color_parts.get(3)),
+            parse_byte(color_parts.get(4)),
+            parse_byte(color_parts.get(5)),
+        )
+        .with_place(place),
         _ => {
             let color_name = &color_parts.get(2).unwrap_or(&"");
-            colors::find(color_name).unwrap_or_default().with_place(place)
+            colors::find(color_name)
+                .unwrap_or_default()
+                .with_place(place)
         }
     }
 }
@@ -76,6 +86,8 @@ struct Args {
 async fn main() {
     env_logger::init();
     let args = Args::parse();
-    if !args.silent { display_banner(args.listen_ip, args.forward_to, args.proxies_path) };
+    if !args.silent {
+        display_banner(args.listen_ip, args.forward_to, args.proxies_path)
+    };
     info!("Waiting for packets...");
 }
