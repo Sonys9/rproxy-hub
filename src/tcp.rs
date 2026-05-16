@@ -39,10 +39,10 @@ impl Tcp {
             .expect("Failed to start TCP listener");
         if self.listen_ip.port() == 0 {
             info!(
-                "Listening tcp on {}",
+                "Listening TCP on {}",
                 listener
                     .local_addr()
-                    .expect("Failed to get tcp listener local address")
+                    .expect("Failed to get TCP listener local address")
             );
         };
         let mut count = 0;

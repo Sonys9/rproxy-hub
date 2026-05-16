@@ -7,6 +7,7 @@ mod colors;
 mod parsers;
 mod tcp;
 mod proxy;
+mod udp;
 
 fn display_banner(listen_ip: &str, forward_to: &str, proxies_path: &str, proxies_count: usize) {
     // Banner available placeholders:
