@@ -49,7 +49,6 @@ You can style text, background, and font weights using both standard named profi
 #### 3. Text Styles & Resets
 * **`%color_STYLE%`** — Apply specific text formatting or resets.
   * *Available styles:* `reset`, `bold`, `dim`, `italic`, `underline`, `blink`, `invert`.
-  * *Note:* Use `%color_reset%` to clear all styling, or `%color_bg_reset%` / `%color_fg_reset%` if you want to clear specific layers.
 
 ---
 

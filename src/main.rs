@@ -55,7 +55,7 @@ fn display_banner(listen_ip: SocketAddr, forward_to: SocketAddr, proxies_path: P
     // 5.1. %color_fg_rgb_R_G_B% - Foreground (text) color marker where R, G and B are numbers 0-255
     // 5.2. %color_fg_NAME% - Foreground (text) color marker where NAME is string color name (example: red, you can get available in COLORS from colors.rs)
     // 5.3. %color_bg_rgb_R_G_B% - Same but for background
-    // 5.4. %color_bg_NAME% - Same but for background (also for reset)
+    // 5.4. %color_bg_NAME% - Same but for background
     // 5.5. %color_STYLE% - Foreground (text) color style (reset, bold, dim, italic, underline, blink, invert)
     let uncolored_banner = include_str!("../banner.txt")
         .replace("%app_version%", env!("CARGO_PKG_VERSION"))
