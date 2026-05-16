@@ -1,49 +1,10 @@
-use crate::colors::{
-    ColorPlace::{Background, Foreground},
-    ColorType::{Id, Rgb, Style},
-    RgbColor, generate,
-};
 use clap::Parser;
 use log::info;
 use regex::{Captures, Regex};
 use std::{net::SocketAddr, path::PathBuf};
 mod colors;
-
-fn parse_byte(byte: Option<&&str>) -> u8 {
-    byte.and_then(|r| r.parse::<u8>().ok()).unwrap_or(255)
-}
-
-fn parse_caps(caps: &Captures) -> String {
-    let color_parts: Vec<&str> = caps[0][1..caps[0].len() - 1].split("_").collect();
-    let &place_str = color_parts.get(1).unwrap_or(&"");
-    let place = match place_str {
-        "fg" => Some(Foreground),
-        "bg" => Some(Background),
-        _ => None,
-    };
-    let color_type = color_parts.get(2).unwrap_or(&"");
-    match *color_type {
-        "rgb" => generate(
-            place,
-            Rgb(RgbColor {
-                r: parse_byte(color_parts.get(3)),
-                g: parse_byte(color_parts.get(4)),
-                b: parse_byte(color_parts.get(5)),
-            }),
-        )
-        .unwrap_or("".to_string()),
-        _ if place.is_some() => {
-            generate(place, Id(color_parts.get(2).unwrap_or(&""))).unwrap_or_default()
-        }
-        _ => generate(
-            None,
-            Style(colors::Style {
-                name: color_parts.get(1).unwrap_or(&""),
-            }),
-        )
-        .unwrap_or_default(),
-    }
-}
+mod parsers;
+mod tcp;
 
 fn display_banner(listen_ip: SocketAddr, forward_to: SocketAddr, proxies_path: PathBuf) {
     // Banner available placeholders:
@@ -63,7 +24,9 @@ fn display_banner(listen_ip: SocketAddr, forward_to: SocketAddr, proxies_path: P
         .replace("%forward_to%", &forward_to.to_string())
         .replace("%proxies_path%", &proxies_path.to_string_lossy());
     let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
-    let banner = colors_regex.replace_all(&uncolored_banner, |caps: &Captures| parse_caps(caps));
+    let banner = colors_regex.replace_all(&uncolored_banner, |caps: &Captures| {
+        parsers::parse_caps(caps)
+    });
     println!("{}", banner);
 }
 
@@ -112,13 +75,13 @@ mod tests {
 
     #[test]
     fn test_byte_parser() {
-        let result = parse_byte(Some(&"123"));
+        let result = parsers::parse_byte(Some(&"123"));
         assert_eq!(result, 123);
     }
 
     #[test]
     fn test_byte_parser_bad_number() {
-        let result = parse_byte(Some(&"bad_number"));
+        let result = parsers::parse_byte(Some(&"bad_number"));
         assert_eq!(result, 255);
     }
 
@@ -127,23 +90,31 @@ mod tests {
         let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
         let test_banner = "%color_fg_rgb_255_165_0%\n%color_reset%\n%color_fg_cyan%";
         let banner = colors_regex
-            .replace_all(test_banner, |caps: &Captures| parse_caps(caps))
+            .replace_all(test_banner, |caps: &Captures| parsers::parse_caps(caps))
             .to_string();
         assert_eq!(
             banner,
             format!(
                 "{}\n{}\n{}",
                 colors::generate(
-                    Some(Foreground),
-                    Rgb(RgbColor {
+                    Some(colors::ColorPlace::Foreground),
+                    colors::ColorType::Rgb(colors::RgbColor {
                         r: 255,
                         g: 165,
                         b: 0
                     })
                 )
                 .unwrap(),
-                colors::generate(Some(Foreground), Style(colors::Style { name: "reset" })).unwrap(),
-                colors::generate(Some(Foreground), Id("cyan")).unwrap()
+                colors::generate(
+                    Some(colors::ColorPlace::Foreground),
+                    colors::ColorType::Style(colors::Style { name: "reset" })
+                )
+                .unwrap(),
+                colors::generate(
+                    Some(colors::ColorPlace::Foreground),
+                    colors::ColorType::Id("cyan")
+                )
+                .unwrap()
             )
         );
     }
