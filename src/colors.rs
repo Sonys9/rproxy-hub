@@ -1,288 +1,81 @@
-pub trait Color {
-    fn with_place(&self, place: ColorPlace) -> String;
-}
-
-impl Color for str {
-    fn with_place(&self, place: ColorPlace) -> String {
-        self.replace("%place%", &(place as u8).to_string())
-    }
-}
-
 pub enum ColorPlace {
     Foreground = 38,
     Background = 48,
 }
 
-pub fn find(name: &str) -> Option<&str> {
-    COLORS
-        .iter()
-        .find(|&&color| color.0 == name)
-        .map(|&color| color.1)
+pub struct RGBColor {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
 }
 
-pub fn from_rgb(r: u8, g: u8, b: u8) -> String {
-    format!("\x1b[%place%;2;{};{};{}m", r, g, b)
+pub struct Style<'a> {
+    pub name: &'a str,
 }
 
-// Format: (color name, marker)
-pub static COLORS: &[(&str, &str)] = &[
-    ("reset", "\x1b[0m"),
-    ("black", "\x1b[%place%;5;0m"),
-    ("red", "\x1b[%place%;5;1m"),
-    ("green", "\x1b[%place%;5;2m"),
-    ("yellow", "\x1b[%place%;5;3m"),
-    ("blue", "\x1b[%place%;5;4m"),
-    ("magenta", "\x1b[%place%;5;5m"),
-    ("cyan", "\x1b[%place%;5;6m"),
-    ("white", "\x1b[%place%;5;7m"),
-    ("bright-black", "\x1b[%place%;5;8m"),
-    ("bright-red", "\x1b[%place%;5;9m"),
-    ("bright-green", "\x1b[%place%;5;10m"),
-    ("bright-yellow", "\x1b[%place%;5;11m"),
-    ("bright-blue", "\x1b[%place%;5;12m"),
-    ("bright-magenta", "\x1b[%place%;5;13m"),
-    ("bright-cyan", "\x1b[%place%;5;14m"),
-    ("bright-white", "\x1b[%place%;5;15m"),
-    ("16", "\x1b[%place%;5;16m"),
-    ("17", "\x1b[%place%;5;17m"),
-    ("18", "\x1b[%place%;5;18m"),
-    ("19", "\x1b[%place%;5;19m"),
-    ("20", "\x1b[%place%;5;20m"),
-    ("21", "\x1b[%place%;5;21m"),
-    ("22", "\x1b[%place%;5;22m"),
-    ("23", "\x1b[%place%;5;23m"),
-    ("24", "\x1b[%place%;5;24m"),
-    ("25", "\x1b[%place%;5;25m"),
-    ("26", "\x1b[%place%;5;26m"),
-    ("27", "\x1b[%place%;5;27m"),
-    ("28", "\x1b[%place%;5;28m"),
-    ("29", "\x1b[%place%;5;29m"),
-    ("30", "\x1b[%place%;5;30m"),
-    ("31", "\x1b[%place%;5;31m"),
-    ("32", "\x1b[%place%;5;32m"),
-    ("33", "\x1b[%place%;5;33m"),
-    ("34", "\x1b[%place%;5;34m"),
-    ("35", "\x1b[%place%;5;35m"),
-    ("36", "\x1b[%place%;5;36m"),
-    ("37", "\x1b[%place%;5;37m"),
-    ("38", "\x1b[%place%;5;38m"),
-    ("39", "\x1b[%place%;5;39m"),
-    ("40", "\x1b[%place%;5;40m"),
-    ("41", "\x1b[%place%;5;41m"),
-    ("42", "\x1b[%place%;5;42m"),
-    ("43", "\x1b[%place%;5;43m"),
-    ("44", "\x1b[%place%;5;44m"),
-    ("45", "\x1b[%place%;5;45m"),
-    ("46", "\x1b[%place%;5;46m"),
-    ("47", "\x1b[%place%;5;47m"),
-    ("48", "\x1b[%place%;5;48m"),
-    ("49", "\x1b[%place%;5;49m"),
-    ("50", "\x1b[%place%;5;50m"),
-    ("51", "\x1b[%place%;5;51m"),
-    ("52", "\x1b[%place%;5;52m"),
-    ("53", "\x1b[%place%;5;53m"),
-    ("54", "\x1b[%place%;5;54m"),
-    ("55", "\x1b[%place%;5;55m"),
-    ("56", "\x1b[%place%;5;56m"),
-    ("57", "\x1b[%place%;5;57m"),
-    ("58", "\x1b[%place%;5;58m"),
-    ("59", "\x1b[%place%;5;59m"),
-    ("60", "\x1b[%place%;5;60m"),
-    ("61", "\x1b[%place%;5;61m"),
-    ("62", "\x1b[%place%;5;62m"),
-    ("63", "\x1b[%place%;5;63m"),
-    ("64", "\x1b[%place%;5;64m"),
-    ("65", "\x1b[%place%;5;65m"),
-    ("66", "\x1b[%place%;5;66m"),
-    ("67", "\x1b[%place%;5;67m"),
-    ("68", "\x1b[%place%;5;68m"),
-    ("69", "\x1b[%place%;5;69m"),
-    ("70", "\x1b[%place%;5;70m"),
-    ("71", "\x1b[%place%;5;71m"),
-    ("72", "\x1b[%place%;5;72m"),
-    ("73", "\x1b[%place%;5;73m"),
-    ("74", "\x1b[%place%;5;74m"),
-    ("75", "\x1b[%place%;5;75m"),
-    ("76", "\x1b[%place%;5;76m"),
-    ("77", "\x1b[%place%;5;77m"),
-    ("78", "\x1b[%place%;5;78m"),
-    ("79", "\x1b[%place%;5;79m"),
-    ("80", "\x1b[%place%;5;80m"),
-    ("81", "\x1b[%place%;5;81m"),
-    ("82", "\x1b[%place%;5;82m"),
-    ("83", "\x1b[%place%;5;83m"),
-    ("84", "\x1b[%place%;5;84m"),
-    ("85", "\x1b[%place%;5;85m"),
-    ("86", "\x1b[%place%;5;86m"),
-    ("87", "\x1b[%place%;5;87m"),
-    ("88", "\x1b[%place%;5;88m"),
-    ("89", "\x1b[%place%;5;89m"),
-    ("90", "\x1b[%place%;5;90m"),
-    ("91", "\x1b[%place%;5;91m"),
-    ("92", "\x1b[%place%;5;92m"),
-    ("93", "\x1b[%place%;5;93m"),
-    ("94", "\x1b[%place%;5;94m"),
-    ("95", "\x1b[%place%;5;95m"),
-    ("96", "\x1b[%place%;5;96m"),
-    ("97", "\x1b[%place%;5;97m"),
-    ("98", "\x1b[%place%;5;98m"),
-    ("99", "\x1b[%place%;5;99m"),
-    ("100", "\x1b[%place%;5;100m"),
-    ("101", "\x1b[%place%;5;101m"),
-    ("102", "\x1b[%place%;5;102m"),
-    ("103", "\x1b[%place%;5;103m"),
-    ("104", "\x1b[%place%;5;104m"),
-    ("105", "\x1b[%place%;5;105m"),
-    ("106", "\x1b[%place%;5;106m"),
-    ("107", "\x1b[%place%;5;107m"),
-    ("108", "\x1b[%place%;5;108m"),
-    ("109", "\x1b[%place%;5;109m"),
-    ("110", "\x1b[%place%;5;110m"),
-    ("111", "\x1b[%place%;5;111m"),
-    ("112", "\x1b[%place%;5;112m"),
-    ("113", "\x1b[%place%;5;113m"),
-    ("114", "\x1b[%place%;5;114m"),
-    ("115", "\x1b[%place%;5;115m"),
-    ("116", "\x1b[%place%;5;116m"),
-    ("117", "\x1b[%place%;5;117m"),
-    ("118", "\x1b[%place%;5;118m"),
-    ("119", "\x1b[%place%;5;119m"),
-    ("120", "\x1b[%place%;5;120m"),
-    ("121", "\x1b[%place%;5;121m"),
-    ("122", "\x1b[%place%;5;122m"),
-    ("123", "\x1b[%place%;5;123m"),
-    ("124", "\x1b[%place%;5;124m"),
-    ("125", "\x1b[%place%;5;125m"),
-    ("126", "\x1b[%place%;5;126m"),
-    ("127", "\x1b[%place%;5;127m"),
-    ("128", "\x1b[%place%;5;128m"),
-    ("129", "\x1b[%place%;5;129m"),
-    ("130", "\x1b[%place%;5;130m"),
-    ("131", "\x1b[%place%;5;131m"),
-    ("132", "\x1b[%place%;5;132m"),
-    ("133", "\x1b[%place%;5;133m"),
-    ("134", "\x1b[%place%;5;134m"),
-    ("135", "\x1b[%place%;5;135m"),
-    ("136", "\x1b[%place%;5;136m"),
-    ("137", "\x1b[%place%;5;137m"),
-    ("138", "\x1b[%place%;5;138m"),
-    ("139", "\x1b[%place%;5;139m"),
-    ("140", "\x1b[%place%;5;140m"),
-    ("141", "\x1b[%place%;5;141m"),
-    ("142", "\x1b[%place%;5;142m"),
-    ("143", "\x1b[%place%;5;143m"),
-    ("144", "\x1b[%place%;5;144m"),
-    ("145", "\x1b[%place%;5;145m"),
-    ("146", "\x1b[%place%;5;146m"),
-    ("147", "\x1b[%place%;5;147m"),
-    ("148", "\x1b[%place%;5;148m"),
-    ("149", "\x1b[%place%;5;149m"),
-    ("150", "\x1b[%place%;5;150m"),
-    ("151", "\x1b[%place%;5;151m"),
-    ("152", "\x1b[%place%;5;152m"),
-    ("153", "\x1b[%place%;5;153m"),
-    ("154", "\x1b[%place%;5;154m"),
-    ("155", "\x1b[%place%;5;155m"),
-    ("156", "\x1b[%place%;5;156m"),
-    ("157", "\x1b[%place%;5;157m"),
-    ("158", "\x1b[%place%;5;158m"),
-    ("159", "\x1b[%place%;5;159m"),
-    ("160", "\x1b[%place%;5;160m"),
-    ("161", "\x1b[%place%;5;161m"),
-    ("162", "\x1b[%place%;5;162m"),
-    ("163", "\x1b[%place%;5;163m"),
-    ("164", "\x1b[%place%;5;164m"),
-    ("165", "\x1b[%place%;5;165m"),
-    ("166", "\x1b[%place%;5;166m"),
-    ("167", "\x1b[%place%;5;167m"),
-    ("168", "\x1b[%place%;5;168m"),
-    ("169", "\x1b[%place%;5;169m"),
-    ("170", "\x1b[%place%;5;170m"),
-    ("171", "\x1b[%place%;5;171m"),
-    ("172", "\x1b[%place%;5;172m"),
-    ("173", "\x1b[%place%;5;173m"),
-    ("174", "\x1b[%place%;5;174m"),
-    ("175", "\x1b[%place%;5;175m"),
-    ("176", "\x1b[%place%;5;176m"),
-    ("177", "\x1b[%place%;5;177m"),
-    ("178", "\x1b[%place%;5;178m"),
-    ("179", "\x1b[%place%;5;179m"),
-    ("180", "\x1b[%place%;5;180m"),
-    ("181", "\x1b[%place%;5;181m"),
-    ("182", "\x1b[%place%;5;182m"),
-    ("183", "\x1b[%place%;5;183m"),
-    ("184", "\x1b[%place%;5;184m"),
-    ("185", "\x1b[%place%;5;185m"),
-    ("186", "\x1b[%place%;5;186m"),
-    ("187", "\x1b[%place%;5;187m"),
-    ("188", "\x1b[%place%;5;188m"),
-    ("189", "\x1b[%place%;5;189m"),
-    ("190", "\x1b[%place%;5;190m"),
-    ("191", "\x1b[%place%;5;191m"),
-    ("192", "\x1b[%place%;5;192m"),
-    ("193", "\x1b[%place%;5;193m"),
-    ("194", "\x1b[%place%;5;194m"),
-    ("195", "\x1b[%place%;5;195m"),
-    ("196", "\x1b[%place%;5;196m"),
-    ("197", "\x1b[%place%;5;197m"),
-    ("198", "\x1b[%place%;5;198m"),
-    ("199", "\x1b[%place%;5;199m"),
-    ("200", "\x1b[%place%;5;200m"),
-    ("201", "\x1b[%place%;5;201m"),
-    ("202", "\x1b[%place%;5;202m"),
-    ("203", "\x1b[%place%;5;203m"),
-    ("204", "\x1b[%place%;5;204m"),
-    ("205", "\x1b[%place%;5;205m"),
-    ("206", "\x1b[%place%;5;206m"),
-    ("207", "\x1b[%place%;5;207m"),
-    ("208", "\x1b[%place%;5;208m"),
-    ("209", "\x1b[%place%;5;209m"),
-    ("210", "\x1b[%place%;5;210m"),
-    ("211", "\x1b[%place%;5;211m"),
-    ("212", "\x1b[%place%;5;212m"),
-    ("213", "\x1b[%place%;5;213m"),
-    ("214", "\x1b[%place%;5;214m"),
-    ("215", "\x1b[%place%;5;215m"),
-    ("216", "\x1b[%place%;5;216m"),
-    ("217", "\x1b[%place%;5;217m"),
-    ("218", "\x1b[%place%;5;218m"),
-    ("219", "\x1b[%place%;5;219m"),
-    ("220", "\x1b[%place%;5;220m"),
-    ("221", "\x1b[%place%;5;221m"),
-    ("222", "\x1b[%place%;5;222m"),
-    ("223", "\x1b[%place%;5;223m"),
-    ("224", "\x1b[%place%;5;224m"),
-    ("225", "\x1b[%place%;5;225m"),
-    ("226", "\x1b[%place%;5;226m"),
-    ("227", "\x1b[%place%;5;227m"),
-    ("228", "\x1b[%place%;5;228m"),
-    ("229", "\x1b[%place%;5;229m"),
-    ("230", "\x1b[%place%;5;230m"),
-    ("231", "\x1b[%place%;5;231m"),
-    ("232", "\x1b[%place%;5;232m"),
-    ("233", "\x1b[%place%;5;233m"),
-    ("234", "\x1b[%place%;5;234m"),
-    ("235", "\x1b[%place%;5;235m"),
-    ("236", "\x1b[%place%;5;236m"),
-    ("237", "\x1b[%place%;5;237m"),
-    ("238", "\x1b[%place%;5;238m"),
-    ("239", "\x1b[%place%;5;239m"),
-    ("240", "\x1b[%place%;5;240m"),
-    ("241", "\x1b[%place%;5;241m"),
-    ("242", "\x1b[%place%;5;242m"),
-    ("243", "\x1b[%place%;5;243m"),
-    ("244", "\x1b[%place%;5;244m"),
-    ("245", "\x1b[%place%;5;245m"),
-    ("246", "\x1b[%place%;5;246m"),
-    ("247", "\x1b[%place%;5;247m"),
-    ("248", "\x1b[%place%;5;248m"),
-    ("249", "\x1b[%place%;5;249m"),
-    ("250", "\x1b[%place%;5;250m"),
-    ("251", "\x1b[%place%;5;251m"),
-    ("252", "\x1b[%place%;5;252m"),
-    ("253", "\x1b[%place%;5;253m"),
-    ("254", "\x1b[%place%;5;254m"),
-    ("255", "\x1b[%place%;5;255m"),
+impl<'a> Style<'a> {
+    fn to_id(&self) -> u8 {
+        match self.name {
+            "reset" => 0,
+            "bold" => 1,
+            "dim" => 2,
+            "italic" => 3,
+            "underline" => 4,
+            "blink" => 5,
+            "invert" => 7,
+            _ => 0,
+        }
+    }
+}
+
+pub enum ColorType<'a> {
+    RGB(RGBColor),
+    Id(&'a str),
+    Style(Style<'a>),
+}
+
+pub fn generate(place: Option<ColorPlace>, r#type: ColorType) -> Option<String> {
+    match r#type {
+        ColorType::Style(style) => Some(format!("\x1b[{}m", style.to_id())),
+        ColorType::Id(name) => {
+            let color_id = COLORS
+                .iter()
+                .find(|&&color| color.0 == name)
+                .map(|&color| color.1)?;
+            Some(format!(
+                "\x1b[{};5;{}m",
+                place.unwrap_or(ColorPlace::Foreground) as u8,
+                color_id
+            ))
+        }
+        ColorType::RGB(color) => Some(format!(
+            "\x1b[{};2;{};{};{}m",
+            place.unwrap_or(ColorPlace::Foreground) as u8,
+            color.r,
+            color.g,
+            color.b
+        )),
+    }
+}
+
+// Format: (color name, id)
+pub static COLORS: &[(&str, u8)] = &[
+    ("black", 0),
+    ("red", 1),
+    ("green", 2),
+    ("yellow", 3),
+    ("blue", 4),
+    ("magenta", 5),
+    ("cyan", 6),
+    ("white", 7),
+    ("bright-black", 8),
+    ("bright-red", 9),
+    ("bright-green", 10),
+    ("bright-yellow", 11),
+    ("bright-blue", 12),
+    ("bright-magenta", 13),
+    ("bright-cyan", 14),
+    ("bright-white", 15),
 ];
 
 #[cfg(test)]
@@ -291,15 +84,17 @@ mod tests {
 
     #[test]
     fn test_color_find() {
-        let color = find("reset").unwrap();
-        assert_eq!(color, "\x1b[0m");
+        let color = generate(None, ColorType::Style(Style { name: "bold" })).unwrap();
+        assert_eq!(color, "\x1b[1m");
     }
 
     #[test]
-    fn test_with_place() {
-        let color_foreground = "\x1b[%place%;5;255m".with_place(ColorPlace::Foreground);
-        let color_background = "\x1b[%place%;5;255m".with_place(ColorPlace::Background);
-        assert_eq!("\x1b[38;5;255m", color_foreground);
-        assert_eq!("\x1b[48;5;255m", color_background);
+    fn test_generate() {
+        let color_foreground =
+            generate(Some(ColorPlace::Foreground), ColorType::Id("cyan")).unwrap();
+        let color_background =
+            generate(Some(ColorPlace::Background), ColorType::Id("bright-blue")).unwrap();
+        assert_eq!("\x1b[38;5;6m", color_foreground);
+        assert_eq!("\x1b[48;5;12m", color_background);
     }
 }

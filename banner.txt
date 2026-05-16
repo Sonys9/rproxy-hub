@@ -1,9 +1,9 @@
-%color_fg_rgb_255_165_0%  .=@##@-%color_fg_reset%            
-%color_fg_rgb_255_165_0%=@#@  -@.%color_fg_reset% .      .#@+       %color_fg_rgb_255_165_0%RProxy%color_fg_reset% Hub v%app_version% — Started
-%color_fg_rgb_255_165_0%. :@ :%.%color_fg_reset% .%     :%.#+       Listening at %color_fg_rgb_255_165_0%%listen_ip%%color_fg_reset%
-%color_fg_rgb_255_165_0%  :@:#.%color_fg_reset%  -#..  .*=*.        Forwarding traffic to %color_fg_rgb_255_165_0%%forward_to%%color_fg_reset%
-%color_fg_rgb_255_165_0%  :@#.%color_fg_reset%   +@@-.-#%.          Using proxies from %color_fg_rgb_255_165_0%%proxies_path%%color_fg_reset%
-%color_fg_rgb_255_165_0%  :@@@%%%color_fg_reset%*%@+=..-*           
-%color_fg_rgb_255_165_0%  .#.%color_fg_reset%    =#    .*           %color_bg_black%   %color_bg_reset%%color_bg_yellow%   %color_bg_reset%%color_bg_red%   %color_bg_green%%color_bg_blue%   %color_bg_reset%%color_bg_magenta%   %color_bg_reset%%color_bg_cyan%   %color_bg_reset%%color_bg_white%   %color_bg_reset%
-         :#    .#           %color_bg_bright-black%   %color_bg_reset%%color_bg_bright-yellow%   %color_bg_reset%%color_bg_bright-red%   %color_bg_green%%color_bg_bright-blue%   %color_bg_reset%%color_bg_bright-magenta%   %color_bg_reset%%color_bg_bright-cyan%   %color_bg_reset%%color_bg_bright-white%   %color_bg_reset%
+%color_fg_rgb_255_165_0%  .=@##@-%color_reset%            
+%color_fg_rgb_255_165_0%=@#@  -@.%color_reset% .      .#@+       %color_fg_rgb_255_165_0%RProxy%color_reset% Hub v%app_version% — Started
+%color_fg_rgb_255_165_0%. :@ :%.%color_reset% .%     :%.#+       Listening at %color_fg_rgb_255_165_0%%listen_ip%%color_reset%
+%color_fg_rgb_255_165_0%  :@:#.%color_reset%  -#..  .*=*.        Forwarding traffic to %color_fg_rgb_255_165_0%%forward_to%%color_reset%
+%color_fg_rgb_255_165_0%  :@#.%color_reset%   +@@-.-#%.          Using proxies from %color_fg_rgb_255_165_0%%proxies_path%%color_reset%
+%color_fg_rgb_255_165_0%  :@@@%%%color_reset%*%@+=..-*           
+%color_fg_rgb_255_165_0%  .#.%color_reset%    =#    .*           %color_bg_black%   %color_reset%%color_bg_yellow%   %color_reset%%color_bg_red%   %color_bg_green%%color_bg_blue%   %color_reset%%color_bg_magenta%   %color_reset%%color_bg_cyan%   %color_reset%%color_bg_white%   %color_reset%
+         :#    .#           %color_bg_bright-black%   %color_reset%%color_bg_bright-yellow%   %color_reset%%color_bg_bright-red%   %color_bg_green%%color_bg_bright-blue%   %color_reset%%color_bg_bright-magenta%   %color_reset%%color_bg_bright-cyan%   %color_reset%%color_bg_bright-white%   %color_reset%
          .#    .#=

@@ -1,6 +1,7 @@
 use crate::colors::{
-    Color,
     ColorPlace::{Background, Foreground},
+    ColorType::{Id, RGB, Style},
+    RGBColor, generate,
 };
 use clap::Parser;
 use log::info;
@@ -14,25 +15,33 @@ fn parse_byte(byte: Option<&&str>) -> u8 {
 
 fn parse_caps(caps: &Captures) -> String {
     let color_parts: Vec<&str> = caps[0][1..caps[0].len() - 1].split("_").collect();
-    let place = if color_parts.get(1).unwrap_or(&"") == &"fg" {
-        Foreground
-    } else {
-        Background
+    let &place_str = color_parts.get(1).unwrap_or(&"");
+    let place = match place_str {
+        "fg" => Some(Foreground),
+        "bg" => Some(Background),
+        _ => None,
     };
     let color_type = color_parts.get(2).unwrap_or(&"");
     match *color_type {
-        "rgb" => colors::from_rgb(
-            parse_byte(color_parts.get(3)),
-            parse_byte(color_parts.get(4)),
-            parse_byte(color_parts.get(5)),
+        "rgb" => generate(
+            place,
+            RGB(RGBColor {
+                r: parse_byte(color_parts.get(3)),
+                g: parse_byte(color_parts.get(4)),
+                b: parse_byte(color_parts.get(5)),
+            }),
         )
-        .with_place(place),
-        _ => {
-            let color_name = &color_parts.get(2).unwrap_or(&"");
-            colors::find(color_name)
-                .unwrap_or_default()
-                .with_place(place)
+        .unwrap_or("".to_string()),
+        _ if place.is_some() => {
+            generate(place, Id(color_parts.get(2).unwrap_or(&""))).unwrap_or_default()
         }
+        _ => generate(
+            None,
+            Style(colors::Style {
+                name: color_parts.get(1).unwrap_or(&""),
+            }),
+        )
+        .unwrap_or_default(),
     }
 }
 
@@ -111,7 +120,7 @@ mod tests {
     #[test]
     fn test_color_parser() {
         let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
-        let test_banner = "%color_fg_rgb_255_165_0%\n%color_fg_reset%\n%color_fg_cyan%";
+        let test_banner = "%color_fg_rgb_255_165_0%\n%color_reset%\n%color_fg_cyan%";
         let banner = colors_regex
             .replace_all(test_banner, |caps: &Captures| parse_caps(caps))
             .to_string();
@@ -119,9 +128,17 @@ mod tests {
             banner,
             format!(
                 "{}\n{}\n{}",
-                colors::from_rgb(255, 165, 0),
-                colors::find("reset").unwrap().with_place(Foreground),
-                colors::find("cyan").unwrap().with_place(Foreground)
+                colors::generate(
+                    Some(Foreground),
+                    RGB(RGBColor {
+                        r: 255,
+                        g: 165,
+                        b: 0
+                    })
+                )
+                .unwrap(),
+                colors::generate(Some(Foreground), Style(colors::Style { name: "reset" })).unwrap(),
+                colors::generate(Some(Foreground), Id("cyan")).unwrap()
             )
         );
     }
