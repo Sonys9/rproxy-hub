@@ -34,20 +34,22 @@ Use these placeholders to display live runtime information from your configurati
 
 ### 🎨 Color & Styling Markers
 
-You can style text and background using both standard named profiles and 24-bit TrueColor (RGB).
+You can style text, background, and font weights using both standard named profiles, text styles, and 24-bit TrueColor (RGB).
 
 #### 1. Text (Foreground) Styling
-* **`%color_fg_NAME%`** — Set text color by its standard name.
-  * *Available names (defined in `colors.rs`):* `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`, `black`, etc.
-* **`%color_fg_rgb_R_G_B%`** — Set raw 24-bit TrueColor text color. Replace `R`, `G`, `B` with values from `0` to `255`.
+* **`%color_fg_rgb_R_G_B%`** — Set raw 24-bit TrueColor text color. Replace `R`, `G`, `B` with numbers from `0` to `255`.
   * *Example:* `%color_fg_rgb_255_165_0%` creates orange text.
-* **`%color_fg_reset%`** — Reset text color back to your terminal's default layout.
+* **`%color_fg_NAME%`** — Set text color by its standard name string. 
+  * *Available names:* Defined in `COLORS` map within `colors.rs` (e.g., `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`, `black`).
 
 #### 2. Background Styling
-* **`%color_bg_NAME%`** — Set background color by its standard name.
-* **`%color_bg_rgb_R_G_B%`** — Set raw 24-bit TrueColor background layout.
-  * *Example:* `%color_bg_rgb_40_40_40%` creates a dark gray background layer.
-* **`%color_bg_reset%`** — Reset background color back to your terminal's default layout.
+* **`%color_bg_rgb_R_G_B%`** — Set raw 24-bit TrueColor background color using numbers from `0` to `255`.
+* **`%color_bg_NAME%`** — Set background color by its standard name string (uses the same color list as foreground).
+
+#### 3. Text Styles & Resets
+* **`%color_STYLE%`** — Apply specific text formatting or resets.
+  * *Available styles:* `reset`, `bold`, `dim`, `italic`, `underline`, `blink`, `invert`.
+  * *Note:* Use `%color_reset%` to clear all styling, or `%color_bg_reset%` / `%color_fg_reset%` if you want to clear specific layers.
 
 ---
 
