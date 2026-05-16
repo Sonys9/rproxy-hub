@@ -53,7 +53,7 @@ fn display_banner(listen_ip: SocketAddr, forward_to: SocketAddr, proxies_path: P
         .replace("%listen_ip%", &listen_ip.to_string())
         .replace("%forward_to%", &forward_to.to_string())
         .replace("%proxies_path%", &proxies_path.to_string_lossy());
-    let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to regex the banner");
+    let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
     let banner = colors_regex.replace_all(&uncolored_banner, |caps: &Captures| parse_caps(caps));
     println!("{}", banner);
 }
@@ -90,4 +90,37 @@ async fn main() {
         display_banner(args.listen_ip, args.forward_to, args.proxies_path)
     };
     info!("Waiting for packets...");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_byte_parser() {
+        let result = parse_byte(Some(&"123"));
+        assert_eq!(result, 123);
+    }
+
+    #[test]
+    fn test_byte_parser_bad_number() {
+        let result = parse_byte(Some(&"bad_number"));
+        assert_eq!(result, 255);
+    }
+
+    #[test]
+    fn test_color_parser() {
+        let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
+        let test_banner = "%color_fg_rgb_255_165_0%\n%color_fg_reset%\n%color_fg_cyan%";
+        let banner = colors_regex
+            .replace_all(test_banner, |caps: &Captures| parse_caps(caps))
+            .to_string();
+        assert_eq!(
+            banner,
+            format!(
+                "{}\n{}\n{}",
+                "\x1b[38;2;255;165;0m", "\x1b[0m", "\x1b[38;5;6m"
+            )
+        );
+    }
 }

@@ -25,7 +25,7 @@ pub fn from_rgb(r: u8, g: u8, b: u8) -> String {
 }
 
 // Format: (color name, marker)
-static COLORS: &[(&str, &str)] = &[
+pub static COLORS: &[(&str, &str)] = &[
     ("reset", "\x1b[0m"),
     ("black", "\x1b[%place%;5;0m"),
     ("red", "\x1b[%place%;5;1m"),
