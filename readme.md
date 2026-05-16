@@ -12,7 +12,7 @@ Rust Proxy Hub
 - 🔥 **Blazingly fast** — Built in pure Rust with zero garbage collection. It just flies.
 - 🦀 **Guaranteed stability** — Compiler-enforced memory safety means no random segfaults or runtime crashes.
 - ⚡ **Async under the hood** — Driven by Tokio to handle thousands of concurrent proxy connections with near-zero latency.
-- 🎨 **Clean CLI** — Features very cool interface
+- 🎨 **Clean CLI** — Features good interface and high customizable banner system
 
 ## 🗺️ Banner Placeholders Reference
 
