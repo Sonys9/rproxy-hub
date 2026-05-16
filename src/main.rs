@@ -77,5 +77,5 @@ async fn main() {
     env_logger::init();
     let args = Args::parse();
     if !args.silent { display_banner(args.listen_ip, args.forward_to, args.proxies_path) };
-    info!("Waiting for connections...");
+    info!("Waiting for packets...");
 }
