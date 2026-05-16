@@ -83,7 +83,12 @@ struct Args {
     proxies_path: PathBuf,
 
     /// Listen IP address
-    #[arg(value_name = "LISTEN IP", default_value = "127.0.0.1:0")]
+    #[arg(
+        short('l'),
+        long("listen-ip"),
+        value_name = "LISTEN IP",
+        default_value = "127.0.0.1:0"
+    )]
     listen_ip: SocketAddr,
 
     /// Do not print the banner
