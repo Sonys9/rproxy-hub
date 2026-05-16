@@ -1,7 +1,7 @@
 use crate::colors::{
     ColorPlace::{Background, Foreground},
-    ColorType::{Id, RGB, Style},
-    RGBColor, generate,
+    ColorType::{Id, Rgb, Style},
+    RgbColor, generate,
 };
 use clap::Parser;
 use log::info;
@@ -25,7 +25,7 @@ fn parse_caps(caps: &Captures) -> String {
     match *color_type {
         "rgb" => generate(
             place,
-            RGB(RGBColor {
+            Rgb(RgbColor {
                 r: parse_byte(color_parts.get(3)),
                 g: parse_byte(color_parts.get(4)),
                 b: parse_byte(color_parts.get(5)),
@@ -130,7 +130,7 @@ mod tests {
                 "{}\n{}\n{}",
                 colors::generate(
                     Some(Foreground),
-                    RGB(RGBColor {
+                    Rgb(RgbColor {
                         r: 255,
                         g: 165,
                         b: 0

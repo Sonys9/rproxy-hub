@@ -3,7 +3,7 @@ pub enum ColorPlace {
     Background = 48,
 }
 
-pub struct RGBColor {
+pub struct RgbColor {
     pub r: u8,
     pub g: u8,
     pub b: u8,
@@ -29,7 +29,7 @@ impl<'a> Style<'a> {
 }
 
 pub enum ColorType<'a> {
-    RGB(RGBColor),
+    Rgb(RgbColor),
     Id(&'a str),
     Style(Style<'a>),
 }
@@ -48,7 +48,7 @@ pub fn generate(place: Option<ColorPlace>, r#type: ColorType) -> Option<String> 
                 color_id
             ))
         }
-        ColorType::RGB(color) => Some(format!(
+        ColorType::Rgb(color) => Some(format!(
             "\x1b[{};2;{};{};{}m",
             place.unwrap_or(ColorPlace::Foreground) as u8,
             color.r,
