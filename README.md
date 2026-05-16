@@ -32,6 +32,9 @@ You can configure the application using the following command-line arguments:
 RUST_LOG=info cargo run --release 46.174.54.240:8308 proxies.txt --listen-ip 127.0.0.1:3000
 ```
 
+# Important
+This app only supports HTTP, HTTPS and SOCKS v4/v5 proxies. Many standard HTTP/SOCKS proxies only forward TCP traffic. If you encounter connectivity issues with UDP-based targets, verify that your listed proxies have UDP forwarding enabled.
+
 ## 🗺️ Banner Placeholders Reference
 
 You can fully customize the application startup banner using dynamic template tags. The parser will automatically replace these tags with live server configurations and ANSI colors.

@@ -1,12 +1,12 @@
 use clap::Parser;
-use log::info;
+use log::{error, info};
 use regex::{Captures, Regex};
 use std::{net::SocketAddr, path::PathBuf};
 mod colors;
 mod parsers;
 mod tcp;
 
-fn display_banner(listen_ip: SocketAddr, forward_to: SocketAddr, proxies_path: PathBuf) {
+fn display_banner(listen_ip: &String, forward_to: &String, proxies_path: &std::borrow::Cow<'_, str>) {
     // Banner available placeholders:
     // 1. %app_version% - App version from Cargo.toml (example: 0.1.0)
     // 2. %listen_ip% - Listen ip (example: 127.0.0.1:0)
@@ -20,9 +20,9 @@ fn display_banner(listen_ip: SocketAddr, forward_to: SocketAddr, proxies_path: P
     // 5.5. %color_STYLE% - Foreground (text) color style (reset, bold, dim, italic, underline, blink, invert)
     let uncolored_banner = include_str!("../banner.txt")
         .replace("%app_version%", env!("CARGO_PKG_VERSION"))
-        .replace("%listen_ip%", &listen_ip.to_string())
-        .replace("%forward_to%", &forward_to.to_string())
-        .replace("%proxies_path%", &proxies_path.to_string_lossy());
+        .replace("%listen_ip%", listen_ip)
+        .replace("%forward_to%", forward_to)
+        .replace("%proxies_path%", proxies_path);
     let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
     let banner = colors_regex.replace_all(&uncolored_banner, |caps: &Captures| {
         parsers::parse_caps(caps)
@@ -64,7 +64,10 @@ async fn main() {
     env_logger::init();
     let args = Args::parse();
     if !args.silent {
-        display_banner(args.listen_ip, args.forward_to, args.proxies_path)
+        display_banner(&args.listen_ip.to_string(), &args.forward_to.to_string(), &args.proxies_path.to_string_lossy())
+    };
+    if !args.proxies_path.exists() {
+        return error!("Failed to load proxies: file not found");
     };
     info!("Waiting for packets...");
 }
