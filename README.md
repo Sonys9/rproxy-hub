@@ -14,6 +14,24 @@ Rust Proxy Hub
 - ⚡ **Async under the hood** — Driven by Tokio to handle thousands of concurrent proxy connections with near-zero latency.
 - 🎨 **Clean CLI** — Features good interface and high customizable banner system
 
+### 🚀 Usage & CLI Arguments
+
+You can configure the application using the following command-line arguments:
+
+
+| Argument | Short / Long | Default | Description |
+| :--- | :---: | :---: | :--- |
+| `<FORWARD TO IP>` | — | *Required* | Forward to destination IP address and port (e.g., `46.174.54.240:8308`). |
+| `<PATH TO PROXIES>` | — | *Required* | Path to the file containing the list of proxies. |
+| `<LISTEN IP>` | — | `127.0.0.1:0` | Local IP address and port to bind and listen on. |
+| — | `-s`, `--silent` | `false` | Do not print the application startup banner. |
+
+#### Example Command
+
+```bash
+RUST_LOG=info cargo run --release 46.174.54.240:8308 proxies.txt --listen-ip 127.0.0.1:3000
+```
+
 ## 🗺️ Banner Placeholders Reference
 
 You can fully customize the application startup banner using dynamic template tags. The parser will automatically replace these tags with live server configurations and ANSI colors.
