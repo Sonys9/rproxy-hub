@@ -2,13 +2,13 @@ use clap::Parser;
 use log::error;
 use regex::{Captures, Regex};
 use std::{net::SocketAddr, path::PathBuf};
-
 use crate::tcp::Tcp;
 mod colors;
 mod parsers;
 mod tcp;
+mod proxy;
 
-fn display_banner(listen_ip: &String, forward_to: &String, proxies_path: &std::borrow::Cow<'_, str>) {
+fn display_banner(listen_ip: &str, forward_to: &str, proxies_path: &str, proxies_count: usize) {
     // Banner available placeholders:
     // 1. %app_version% - App version from Cargo.toml (example: 0.1.0)
     // 2. %listen_ip% - Listen ip (example: 127.0.0.1:0)
@@ -24,7 +24,8 @@ fn display_banner(listen_ip: &String, forward_to: &String, proxies_path: &std::b
         .replace("%app_version%", env!("CARGO_PKG_VERSION"))
         .replace("%listen_ip%", listen_ip)
         .replace("%forward_to%", forward_to)
-        .replace("%proxies_path%", &proxies_path);
+        .replace("%proxies_path%", proxies_path)
+        .replace("%proxies_count%", &proxies_count.to_string());
     let colors_regex = Regex::new(r"%color_[^%]*%").expect("Failed to generate regex");
     let banner = colors_regex.replace_all(&uncolored_banner, |caps: &Captures| {
         parsers::parse_caps(caps)
@@ -65,18 +66,30 @@ struct Args {
 async fn main() {
     env_logger::init();
     let args = Args::parse();
-    if !args.silent {
-        display_banner(&args.listen_ip.to_string(), &args.forward_to.to_string(), &args.proxies_path.to_string_lossy())
+    let proxies = parsers::parse_proxies(&args.proxies_path)
+        .await
+        .expect("Failed to parse proxies");
+    if proxies.is_empty() {
+        return error!(
+            "Proxy file is empty at {}!",
+            args.proxies_path.to_string_lossy()
+        );
     };
-    let proxies = parsers::parse_proxies(&args.proxies_path).await.expect("Failed to parse proxies");
-    if proxies.len() == 0 {
-        return error!("Proxy file is empty at {}!", args.proxies_path.to_string_lossy());
+    if !args.silent {
+        display_banner(
+            &args.listen_ip.to_string(),
+            &args.forward_to.to_string(),
+            &args.proxies_path.to_string_lossy(),
+            proxies.len(),
+        );
     };
     Tcp {
         listen_ip: args.listen_ip,
         forward_to: args.forward_to,
-        proxies: proxies
-    }.start_loop().await;
+        proxies,
+    }
+    .start_loop()
+    .await;
 }
 
 #[cfg(test)]

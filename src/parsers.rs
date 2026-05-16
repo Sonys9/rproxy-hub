@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
-use crate::colors::{
+use crate::{colors::{
     self,
     ColorPlace::{Background, Foreground},
     ColorType::{Id, Rgb, Style},
     RgbColor, generate,
-};
+}, proxy::{ProxyConfig, parse_proxy}};
 use regex::Captures;
 
 pub fn parse_byte(byte: Option<&&str>) -> u8 {
@@ -44,7 +44,7 @@ pub fn parse_caps(caps: &Captures) -> String {
     }
 }
 
-pub async fn parse_proxies(file: &PathBuf) -> Result<Vec<String>, String> {
+pub async fn parse_proxies(file: &PathBuf) -> Result<Vec<ProxyConfig>, String> {
     if !file.exists() {
         return Err("Failed to load proxies: file not found".to_string());
     };
@@ -54,6 +54,7 @@ pub async fn parse_proxies(file: &PathBuf) -> Result<Vec<String>, String> {
         .lines()
         .map(|line| line.trim().to_string())
         .filter(|line| !line.is_empty())
+        .map(|line| parse_proxy(&line).expect("Failed to parse proxies"))
         .collect();
     Ok(proxies)
 }
