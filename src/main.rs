@@ -119,7 +119,9 @@ mod tests {
             banner,
             format!(
                 "{}\n{}\n{}",
-                "\x1b[38;2;255;165;0m", "\x1b[0m", "\x1b[38;5;6m"
+                colors::from_rgb(255, 165, 0),
+                colors::find("reset").unwrap(),
+                colors::find("cyan").unwrap()
             )
         );
     }
