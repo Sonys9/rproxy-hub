@@ -20,7 +20,7 @@ You can configure the application using the following command-line arguments:
 
 
 | Argument | Short | Long | Default | Description |
-| :--- | :---: | :---: | :--- |
+| :--- | :---: | :---: | :---: | :--- |
 | `<FORWARD TO IP>` | — | — | *Required* | Forward to destination IP address and port (e.g., `46.174.54.240:8308`). |
 | `<PATH TO PROXIES>` | — | — | *Required* | Path to the file containing the list of proxies. |
 | `<LISTEN IP>` | `-l` | `--listen-ip` | `127.0.0.1:0` | Local IP address and port to bind and listen on. |
