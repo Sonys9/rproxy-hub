@@ -120,8 +120,8 @@ mod tests {
             format!(
                 "{}\n{}\n{}",
                 colors::from_rgb(255, 165, 0),
-                colors::find("reset").unwrap(),
-                colors::find("cyan").unwrap()
+                colors::find("reset").unwrap().with_place(Foreground),
+                colors::find("cyan").unwrap().with_place(Foreground)
             )
         );
     }
