@@ -24,6 +24,7 @@ struct Session {
     forward_to: SocketAddr,
     server_socket: Arc<UdpSocket>,
     origin_addr: SocketAddr,
+    relay_addr: SocketAddr
 }
 
 async fn watch(session: Session) {
@@ -82,6 +83,8 @@ impl Udp {
                 }
                 None => {
                     debug!("Got new peer");
+                    let mut stream = Socks5Stream::connect(self.proxies[0].addr, self.forward_to).await.expect("Failed to connect to the proxy");
+                    let relay_addr = stream.udp_address().expect("Proxy must support UDP");
                     let server_socket = Arc::new(
                         UdpSocket::bind("0.0.0.0:0") // Random available port
                             .await

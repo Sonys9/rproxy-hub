@@ -9,5 +9,4 @@ env_logger = "0.11.10"
 log = "0.4.29"
 regex = "1.12.3"
 tokio = { version = "1.52.3", features = ["full"] }
-tokio-socks = "0.5.2"
 url = "2.5.8"
