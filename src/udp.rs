@@ -12,7 +12,7 @@ pub struct Udp {
 #[derive(Clone)]
 struct Session {
     last_packet: Instant,
-    socket: UdpSocket
+    socket: Arc<UdpSocket>
 }
 
 impl Udp {
@@ -28,8 +28,8 @@ impl Udp {
                     .expect("Failed to get UDP listener local address")
             );
         };
-        let mut buffer = vec![0; 65535];
-        let mut sessions: Arc<Mutex<HashMap<SocketAddr, Session>>> = Arc::new(Mutex::new(HashMap::new()));
+        let mut buffer = vec![0; 65535]; // Max possible buffer (u16 limit)
+        let sessions: Arc<Mutex<HashMap<SocketAddr, Session>>> = Arc::new(Mutex::new(HashMap::new()));
         loop {
             let Ok((size, peer)) = socket.recv_from(&mut buffer).await else { continue };
             info!("Got packet with len {}", size);
@@ -42,8 +42,11 @@ impl Udp {
                     session.socket.send_to(&mut buffer[..size], self.forward_to).await.ok();
                 },
                 None => {
-                    
-                    //sessions.insert(peer, Session { last_packet: Instant::now(), socket: socket })
+                    let socket = UdpSocket::bind("127.0.0.1:0") // Random available port
+                        .await
+                        .expect("Failed to start UDP listener");
+                    socket.send_to(&mut buffer[..size], self.forward_to).await.ok();
+                    sessions.lock().await.insert(peer, Session { last_packet: Instant::now(), socket: Arc::new(socket) });
                 }
             };
         }
