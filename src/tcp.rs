@@ -1,7 +1,13 @@
+use crate::proxy::ProxyConfig;
 use log::info;
 use std::net::SocketAddr;
-use tokio::{io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener, TcpStream, tcp::{OwnedReadHalf, OwnedWriteHalf}}};
-use crate::proxy::ProxyConfig;
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::{
+        TcpListener, TcpStream,
+        tcp::{OwnedReadHalf, OwnedWriteHalf},
+    },
+};
 
 pub struct Tcp {
     pub listen_ip: SocketAddr,
@@ -9,19 +15,26 @@ pub struct Tcp {
     pub forward_to: SocketAddr,
 }
 
-async fn process_data(mut writer: OwnedWriteHalf, mut reader: OwnedReadHalf) -> Result<(), std::io::Error> {
+async fn process_data(
+    mut writer: OwnedWriteHalf,
+    mut reader: OwnedReadHalf,
+) -> Result<(), std::io::Error> {
     let mut buffer = [0; 1024];
     loop {
         let n = reader.read(&mut buffer).await?;
         if n == 0 {
-            return Ok::<(), std::io::Error>(())
+            return Ok::<(), std::io::Error>(());
         };
         info!("Got packet with len {}", n);
         writer.write_all(&buffer[..n]).await?;
     }
 }
 
-async fn handle_client(stream: TcpStream, forward_to: SocketAddr, proxy: ProxyConfig) -> Result<(), std::io::Error> {
+async fn handle_client(
+    stream: TcpStream,
+    forward_to: SocketAddr,
+    proxy: ProxyConfig,
+) -> Result<(), std::io::Error> {
     let connection = TcpStream::connect(forward_to).await?;
     connection.set_nodelay(true).ok();
     let (client_reader, client_writer) = stream.into_split();

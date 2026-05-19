@@ -1,11 +1,14 @@
 use std::path::PathBuf;
 
-use crate::{colors::{
-    self,
-    ColorPlace::{Background, Foreground},
-    ColorType::{Id, Rgb, Style},
-    RgbColor, generate,
-}, proxy::{ProxyConfig, parse_proxy}};
+use crate::{
+    colors::{
+        self,
+        ColorPlace::{Background, Foreground},
+        ColorType::{Id, Rgb, Style},
+        RgbColor, generate,
+    },
+    proxy::{ProxyConfig, parse_proxy},
+};
 use regex::Captures;
 
 pub fn parse_byte(byte: Option<&&str>) -> u8 {

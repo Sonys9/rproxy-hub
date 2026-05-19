@@ -1,12 +1,12 @@
+use crate::{tcp::Tcp, udp::Udp};
 use clap::Parser;
 use log::error;
 use regex::{Captures, Regex};
 use std::{net::SocketAddr, path::PathBuf};
-use crate::tcp::Tcp;
 mod colors;
 mod parsers;
-mod tcp;
 mod proxy;
+mod tcp;
 mod udp;
 
 fn display_banner(listen_ip: &str, forward_to: &str, proxies_path: &str, proxies_count: usize) {
@@ -84,13 +84,20 @@ async fn main() {
             proxies.len(),
         );
     };
-    Tcp {
+    let tcp = Tcp {
+        listen_ip: args.listen_ip,
+        forward_to: args.forward_to,
+        proxies: proxies.clone(),
+    };
+    let udp = Udp {
         listen_ip: args.listen_ip,
         forward_to: args.forward_to,
         proxies,
-    }
-    .start_loop()
-    .await;
+    };
+    tokio::select! {
+        _ = tcp.start_loop() => {},
+        _ = udp.start_loop() => {},
+    };
 }
 
 #[cfg(test)]
